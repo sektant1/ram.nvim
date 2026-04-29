@@ -1,10 +1,10 @@
 # ram.nvim
 
-Quick-note buffer. Always there. Zero friction.
+Quick-note buffer. Always there.
 
 Two notes:
-- **global** — one note, everywhere
-- **project** — one note per project root
+- **global**  one note, everywhere
+- **project**  one note per project root
 
 Files on disk. No state loss.
 
@@ -57,8 +57,10 @@ require("ram").setup({
     "Makefile", ".project-notes.md",
   },
   keymaps = {
-    global = "<leader>rg", project = "<leader>rp",
-    preview = "<leader>rv", close = "<leader>rx",
+    global = "<leader>rg",
+    project = "<leader>rp",
+    preview = "<leader>rv",
+    close = "<leader>rx",
   },
   filetype = "markdown",
   autosave = true,
@@ -75,11 +77,11 @@ Any keymap = `false` to disable. `project_root_markers = {}` = strict cwd.
 ## Preview
 
 Tries in order:
-1. `render-markdown.nvim` — toggle in-buffer
-2. `glow` CLI — terminal split
-3. native markdown syntax — fallback
+1. `render-markdown.nvim` toggle in-buffer
+2. `glow` CLI terminal split
+3. native markdown syntax fallback
 
-No hard deps. Pick none = still works.
+No hard deps.
 
 ## Health
 
