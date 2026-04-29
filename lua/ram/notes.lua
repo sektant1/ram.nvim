@@ -16,21 +16,32 @@ local function dirname(path)
 end
 
 ---Ensure file exists at `path` with `header` if missing. Creates parent dirs.
+---Returns true on success, false + reason on failure.
 ---@param path string
 ---@param header string
+---@return boolean ok
+---@return string? err
 function M.ensure(path, header)
   local dir = dirname(path)
   if not exists(dir) then
-    vim.fn.mkdir(dir, "p")
+    local ok = pcall(vim.fn.mkdir, dir, "p")
+    if not ok or not exists(dir) then
+      return false, "cannot create directory: " .. dir
+    end
   end
   if not exists(path) then
-    local fh, err = io.open(path, "w")
+    local fh, ferr = io.open(path, "w")
     if not fh then
-      error("ram.nvim: cannot create " .. path .. ": " .. tostring(err))
+      return false, "cannot create file: " .. path .. " (" .. tostring(ferr) .. ")"
     end
     fh:write(header)
     fh:close()
   end
+  return true
+end
+
+local function notify_err(msg)
+  vim.notify("ram.nvim: " .. msg, vim.log.levels.ERROR)
 end
 
 ---@return string
@@ -66,18 +77,26 @@ function M.project_path()
   return M.project_root() .. "/" .. config.options.project_note_filename
 end
 
----@return string path
+---@return string|nil path nil if creation failed
 function M.global()
   local p = M.global_path()
-  M.ensure(p, "# RAM\n\n")
+  local ok, err = M.ensure(p, "# RAM\n\n")
+  if not ok then
+    notify_err(err)
+    return nil
+  end
   return p
 end
 
----@return string path
+---@return string|nil path nil if creation failed
 function M.project()
   local p = M.project_path()
   local name = vim.fn.fnamemodify(M.project_root(), ":t")
-  M.ensure(p, "# " .. name .. " notes\n\n")
+  local ok, err = M.ensure(p, "# " .. name .. " notes\n\n")
+  if not ok then
+    notify_err(err)
+    return nil
+  end
   return p
 end
 

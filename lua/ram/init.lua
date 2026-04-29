@@ -39,9 +39,15 @@ local function register_lsp_guard()
   vim.api.nvim_create_autocmd("LspAttach", {
     group = group,
     callback = function(ev)
-      if vim.b[ev.buf].ram then
-        pcall(vim.lsp.buf_detach_client, ev.buf, ev.data.client_id)
+      if not vim.b[ev.buf].ram then
+        return
       end
+      local client_id = ev.data.client_id
+      vim.schedule(function()
+        if vim.api.nvim_buf_is_valid(ev.buf) then
+          pcall(vim.lsp.buf_detach_client, ev.buf, client_id)
+        end
+      end)
     end,
   })
 end

@@ -79,11 +79,16 @@ local function open_container(path)
 end
 
 local function detach_lsp(bufnr)
-  local clients = vim.lsp.get_clients and vim.lsp.get_clients({ bufnr = bufnr })
-    or vim.lsp.get_active_clients({ bufnr = bufnr })
-  for _, client in ipairs(clients or {}) do
-    pcall(vim.lsp.buf_detach_client, bufnr, client.id)
-  end
+  vim.schedule(function()
+    if not vim.api.nvim_buf_is_valid(bufnr) then
+      return
+    end
+    local clients = vim.lsp.get_clients and vim.lsp.get_clients({ bufnr = bufnr })
+      or vim.lsp.get_active_clients({ bufnr = bufnr })
+    for _, client in ipairs(clients or {}) do
+      pcall(vim.lsp.buf_detach_client, bufnr, client.id)
+    end
+  end)
 end
 
 local function setup_buffer(bufnr, kind, path)
@@ -149,6 +154,9 @@ function M.open(kind)
   end
 
   local path = path_for(kind)
+  if not path then
+    return
+  end
   local bufnr, winid = open_container(path)
   M.state.bufnr = bufnr
   M.state.winid = winid
