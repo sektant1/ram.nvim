@@ -24,7 +24,14 @@ local function path_for(kind)
   end
 end
 
-local function apply_window_opts(winid)
+local function scope_label(kind, path)
+  if kind == "global" then
+    return "global"
+  end
+  return vim.fn.fnamemodify(vim.fs.dirname(path), ":t")
+end
+
+local function apply_window_opts(winid, kind, path)
   local wo = vim.wo[winid]
   wo.signcolumn = "no"
   wo.foldcolumn = "0"
@@ -34,13 +41,17 @@ local function apply_window_opts(winid)
   wo.wrap = true
   wo.linebreak = true
   wo.cursorline = false
+  wo.winbar = " RAM · " .. scope_label(kind, path) .. " %m "
 end
 
-local function open_container(path)
+local function open_container(path, kind)
   local opts = config.options
   local bufnr = vim.fn.bufnr(path, true)
   vim.fn.bufload(bufnr)
   vim.bo[bufnr].buflisted = false
+
+  local base = vim.trim(opts.float.title or "RAM")
+  local title = " " .. base .. " · " .. scope_label(kind, path) .. " "
 
   local winid
   if opts.display == "float" then
@@ -55,7 +66,7 @@ local function open_container(path)
       row = row,
       col = col,
       border = opts.float.border,
-      title = opts.float.title,
+      title = title,
       style = "minimal",
     })
   elseif opts.display == "split" then
@@ -74,7 +85,7 @@ local function open_container(path)
     error("ram.nvim: unknown display mode: " .. tostring(opts.display))
   end
 
-  apply_window_opts(winid)
+  apply_window_opts(winid, kind, path)
   return bufnr, winid
 end
 
@@ -151,7 +162,7 @@ function M.open(kind)
   if not path then
     return
   end
-  local bufnr, winid = open_container(path)
+  local bufnr, winid = open_container(path, kind)
   M.state.bufnr = bufnr
   M.state.winid = winid
   M.state.kind = kind

@@ -42,7 +42,6 @@ M.defaults = {
     "pyproject.toml",
     "go.mod",
     "Makefile",
-    ".ram.md",
   },
   keymaps = {
     global = false,

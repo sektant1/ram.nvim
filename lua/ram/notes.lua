@@ -50,19 +50,22 @@ function M.global_path()
 end
 
 ---Walk up from `start` looking for any of `markers`. Returns the directory
----containing the first marker found, or `start` if none.
+---containing the first marker, or nil if none found.
 ---@param start string
 ---@param markers string[]
----@return string
+---@return string?
 function M.find_root(start, markers)
   local found = vim.fs.find(markers, { upward = true, path = start, limit = 1 })
   if found and found[1] then
     return vim.fs.dirname(found[1])
   end
-  return start
+  return nil
 end
 
----@return string
+---Resolve the project root for the cwd.
+---Returns cwd if `project_root_markers` is empty (strict-cwd mode).
+---Returns nil if markers are configured but none are found upward.
+---@return string?
 function M.project_root()
   local cwd = vim.fn.getcwd()
   local markers = config.options.project_root_markers or {}
@@ -72,9 +75,13 @@ function M.project_root()
   return M.find_root(cwd, markers)
 end
 
----@return string
+---@return string?
 function M.project_path()
-  return M.project_root() .. "/" .. config.options.project_note_filename
+  local root = M.project_root()
+  if not root then
+    return nil
+  end
+  return root .. "/" .. config.options.project_note_filename
 end
 
 ---@return string|nil path nil if creation failed
@@ -88,10 +95,20 @@ function M.global()
   return p
 end
 
----@return string|nil path nil if creation failed
+---@return string|nil path nil if creation failed or no project root
 function M.project()
-  local p = M.project_path()
-  local name = vim.fn.fnamemodify(M.project_root(), ":t")
+  local root = M.project_root()
+  if not root then
+    notify_err(
+      "no project root found from "
+        .. vim.fn.getcwd()
+        .. " — set `project_root_markers = {}` for strict cwd, or create one of: "
+        .. table.concat(config.options.project_root_markers or {}, ", ")
+    )
+    return nil
+  end
+  local p = root .. "/" .. config.options.project_note_filename
+  local name = vim.fn.fnamemodify(root, ":t")
   local ok, err = M.ensure(p, "# " .. name .. " notes\n\n")
   if not ok then
     notify_err(err)
