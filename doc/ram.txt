@@ -43,16 +43,15 @@ Defaults: >
       title = " RAM ",
     },
     global_note_path = nil,  -- override default path
-    project_note_filename = ".project-notes.md",
+    project_note_filename = ".ram.md",
     project_root_markers = {
       ".git", ".hg", ".svn",
       "package.json", "Cargo.toml", "pyproject.toml", "go.mod",
-      "Makefile", ".project-notes.md",
+      "Makefile", ".ram.md",
     },
     keymaps = {
       global = false,   -- e.g. "<leader>rg"
       project = false,  -- e.g. "<leader>rp"
-      preview = false,  -- e.g. "<leader>rv"
       close = false,    -- e.g. "<leader>rx"
     },
     filetype = "markdown",
@@ -73,7 +72,6 @@ Set `project_root_markers = {}` to force strict cwd behavior.
 
   *:RamGlobal*    Open the global note (toggle if already open)
   *:RamProject*   Open the project note (toggle if already open)
-  *:RamPreview*   Toggle markdown preview of the active ram buffer
   *:RamClose*     Close the ram window
 
 ==============================================================================
@@ -85,7 +83,6 @@ No default mappings — opt in explicitly. Two options:
     keys = {
       { "<leader>rg", function() require("ram").global() end },
       { "<leader>rp", function() require("ram").project() end },
-      { "<leader>rv", function() require("ram").preview() end },
       { "<leader>rx", function() require("ram").close() end },
     }
 <
@@ -101,13 +98,12 @@ Inside a ram buffer:
   require("ram").setup(opts)
   require("ram").global()
   require("ram").project()
-  require("ram").preview()
   require("ram").close()
 
 ==============================================================================
 7. HEALTH                                                        *ram-health*
 
-Run `:checkhealth ram` to verify Neovim version, config load, note paths,
-and preview backend availability (render-markdown.nvim or glow CLI).
+Run `:checkhealth ram` to verify Neovim version, config load, and note
+paths (existence, project root resolution, configured keymaps).
 
 vim:tw=78:ts=8:ft=help:norl:

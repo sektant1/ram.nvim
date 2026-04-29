@@ -104,12 +104,6 @@ local function setup_buffer(bufnr, kind, path)
     M.close()
   end, { buffer = bufnr, silent = true, desc = "Ram: close" })
 
-  if opts.keymaps and opts.keymaps.preview then
-    vim.keymap.set("n", opts.keymaps.preview, function()
-      require("ram.preview").toggle()
-    end, { buffer = bufnr, silent = true, desc = "Ram: preview" })
-  end
-
   local group = vim.api.nvim_create_augroup("ram_buf_" .. bufnr, { clear = true })
   vim.api.nvim_create_autocmd("BufLeave", {
     group = group,

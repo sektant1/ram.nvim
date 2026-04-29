@@ -7,7 +7,6 @@
 ---@class RamKeymaps
 ---@field global string|false
 ---@field project string|false
----@field preview string|false
 ---@field close string|false
 
 ---@class RamConfig
@@ -33,7 +32,7 @@ M.defaults = {
     title = " RAM ",
   },
   global_note_path = nil,
-  project_note_filename = ".project-notes.md",
+  project_note_filename = ".ram.md",
   project_root_markers = {
     ".git",
     ".hg",
@@ -43,12 +42,11 @@ M.defaults = {
     "pyproject.toml",
     "go.mod",
     "Makefile",
-    ".project-notes.md",
+    ".ram.md",
   },
   keymaps = {
     global = false,
     project = false,
-    preview = false,
     close = false,
   },
   filetype = "markdown",

@@ -35,10 +35,9 @@ Files on disk. No state loss.
   keys = {
     { "<leader>rg", function() require("ram").global() end,  desc = "Ram global" },
     { "<leader>rp", function() require("ram").project() end, desc = "Ram project" },
-    { "<leader>rv", function() require("ram").preview() end, desc = "Ram preview" },
     { "<leader>rx", function() require("ram").close() end,   desc = "Ram close" },
   },
-  cmd = { "RamGlobal", "RamProject", "RamPreview", "RamClose" },
+  cmd = { "RamGlobal", "RamProject", "RamClose" },
 }
 ```
 
@@ -60,7 +59,7 @@ Reopen same note = close. Different note = swap.
 ## Where files live
 
 - global: `stdpath("data")/ram/global.md`
-- project: `<project_root>/.project-notes.md`
+- project: `<project_root>/.ram.md`
 
 Project root = walk up cwd, find `.git` / `package.json` / `Cargo.toml` / `pyproject.toml` / `go.mod` / `Makefile`. None? Use cwd.
 
@@ -71,17 +70,16 @@ require("ram").setup({
   display = "float",  -- float | split | vsplit | tab
   float = { width = 0.6, height = 0.7, border = "rounded", title = " RAM " },
   global_note_path = nil,
-  project_note_filename = ".project-notes.md",
+  project_note_filename = ".ram.md",
   project_root_markers = {
     ".git", ".hg", ".svn",
     "package.json", "Cargo.toml", "pyproject.toml", "go.mod",
-    "Makefile", ".project-notes.md",
+    "Makefile", ".ram.md",
   },
   keymaps = {
     -- no defaults — set explicitly or use lazy `keys = {}`
     global = false,   -- e.g. "<leader>rg"
     project = false,  -- e.g. "<leader>rp"
-    preview = false,  -- e.g. "<leader>rv"
     close = false,    -- e.g. "<leader>rx"
   },
   filetype = "markdown",
@@ -94,16 +92,7 @@ Any keymap = `false` to disable. `project_root_markers = {}` = strict cwd.
 
 ## Commands
 
-`:RamGlobal` `:RamProject` `:RamPreview` `:RamClose`
-
-## Preview
-
-Tries in order:
-1. `render-markdown.nvim` toggle in-buffer
-2. `glow` CLI terminal split
-3. native markdown syntax fallback
-
-No hard deps.
+`:RamGlobal` `:RamProject` `:RamClose`
 
 ## Health
 

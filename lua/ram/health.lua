@@ -43,7 +43,7 @@ function M.check()
   health.start("ram.nvim: keymaps")
   local km = config.options.keymaps or {}
   local any = false
-  for _, k in ipairs({ "global", "project", "preview", "close" }) do
+  for _, k in ipairs({ "global", "project", "close" }) do
     if km[k] then
       health.ok(k .. " -> " .. tostring(km[k]))
       any = true
@@ -51,22 +51,6 @@ function M.check()
   end
   if not any then
     health.info("no keymaps set in config — bind via your plugin manager or setup({ keymaps = ... })")
-  end
-
-  health.start("ram.nvim: preview backends")
-  local ok_rm = pcall(require, "render-markdown")
-  if ok_rm then
-    health.ok("render-markdown.nvim available")
-  else
-    health.info("render-markdown.nvim not installed")
-  end
-  if vim.fn.executable("glow") == 1 then
-    health.ok("glow CLI available")
-  else
-    health.info("glow CLI not found")
-  end
-  if not ok_rm and vim.fn.executable("glow") ~= 1 then
-    health.warn("no preview backend — falling back to native markdown syntax")
   end
 end
 
