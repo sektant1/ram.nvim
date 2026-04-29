@@ -24,18 +24,30 @@ local function path_for(kind)
   end
 end
 
+local function apply_window_opts(winid)
+  local wo = vim.wo[winid]
+  wo.signcolumn = "no"
+  wo.foldcolumn = "0"
+  wo.number = false
+  wo.relativenumber = false
+  wo.spell = false
+  wo.wrap = true
+  wo.linebreak = true
+  wo.cursorline = true
+end
+
 local function open_container(path)
   local opts = config.options
   local bufnr = vim.fn.bufnr(path, true)
   vim.fn.bufload(bufnr)
-  vim.bo[bufnr].buflisted = true
+  vim.bo[bufnr].buflisted = false
 
   local winid
   if opts.display == "float" then
-    local w = math.floor(vim.o.columns * opts.float.width)
-    local h = math.floor(vim.o.lines * opts.float.height)
-    local row = math.floor((vim.o.lines - h) / 2)
-    local col = math.floor((vim.o.columns - w) / 2)
+    local w = math.max(1, math.floor(vim.o.columns * opts.float.width))
+    local h = math.max(1, math.floor(vim.o.lines * opts.float.height))
+    local row = math.max(0, math.floor((vim.o.lines - h) / 2))
+    local col = math.max(0, math.floor((vim.o.columns - w) / 2))
     winid = vim.api.nvim_open_win(bufnr, true, {
       relative = "editor",
       width = w,
@@ -62,14 +74,26 @@ local function open_container(path)
     error("ram.nvim: unknown display mode: " .. tostring(opts.display))
   end
 
+  apply_window_opts(winid)
   return bufnr, winid
 end
 
-local function setup_buffer(bufnr, kind)
+local function detach_lsp(bufnr)
+  local clients = vim.lsp.get_clients and vim.lsp.get_clients({ bufnr = bufnr })
+    or vim.lsp.get_active_clients({ bufnr = bufnr })
+  for _, client in ipairs(clients or {}) do
+    pcall(vim.lsp.buf_detach_client, bufnr, client.id)
+  end
+end
+
+local function setup_buffer(bufnr, kind, path)
   local opts = config.options
+  vim.b[bufnr].ram = kind
+  vim.b[bufnr].ram_path = path
   vim.bo[bufnr].filetype = opts.filetype
   vim.bo[bufnr].swapfile = false
   vim.bo[bufnr].bufhidden = "hide"
+  detach_lsp(bufnr)
 
   vim.keymap.set("n", "q", function()
     M.close()
@@ -131,7 +155,7 @@ function M.open(kind)
   M.state.kind = kind
   M.state.path = path
 
-  setup_buffer(bufnr, kind)
+  setup_buffer(bufnr, kind, path)
 
   local cur = M.state.cursor[kind]
   if cur then

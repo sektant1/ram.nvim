@@ -34,6 +34,18 @@ local function set_keymap(lhs, fn, desc)
   vim.keymap.set("n", lhs, fn, { silent = true, desc = desc })
 end
 
+local function register_lsp_guard()
+  local group = vim.api.nvim_create_augroup("ram_lsp_guard", { clear = true })
+  vim.api.nvim_create_autocmd("LspAttach", {
+    group = group,
+    callback = function(ev)
+      if vim.b[ev.buf].ram then
+        pcall(vim.lsp.buf_detach_client, ev.buf, ev.data.client_id)
+      end
+    end,
+  })
+end
+
 local function register_commands()
   vim.api.nvim_create_user_command("RamGlobal", M.global, { desc = "Ram: open global note" })
   vim.api.nvim_create_user_command("RamProject", M.project, { desc = "Ram: open project note" })
@@ -50,6 +62,7 @@ function M.setup(opts)
   set_keymap(km.project, M.project, "Ram: project note")
   set_keymap(km.preview, M.preview, "Ram: preview")
   set_keymap(km.close, M.close, "Ram: close")
+  register_lsp_guard()
   if config.options.commands then
     register_commands()
   end
