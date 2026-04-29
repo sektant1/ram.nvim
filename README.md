@@ -76,11 +76,10 @@ require("ram").setup({
     "package.json", "Cargo.toml", "pyproject.toml", "go.mod",
     "Makefile", ".ram.md",
   },
-  keymaps = {
-    -- no defaults — set explicitly or use lazy `keys = {}`
-    global = false,   -- e.g. "<leader>rg"
-    project = false,  -- e.g. "<leader>rp"
-    close = false,    -- e.g. "<leader>rx"
+  keys = {
+    -- { "<leader>rg", function() require("ram").global() end,  desc = "Ram global" }, 
+    -- { "<leader>rp", function() require("ram").project() end, desc = "Ram project" },
+    -- { "<leader>rx", function() require("ram").close() end,   desc = "Ram close" },
   },
   filetype = "markdown",
   autosave = true,
