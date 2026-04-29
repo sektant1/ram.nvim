@@ -4,6 +4,7 @@
 
 # ram.nvim
 
+Ready Access Markdown
 Quick-note buffer. Always there.
 
 [![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143?logo=neovim&logoColor=white)](https://neovim.io)
