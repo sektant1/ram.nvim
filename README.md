@@ -12,7 +12,7 @@ Files on disk. No state loss.
 
 ```lua
 {
-  "gfe/ram.nvim",
+  "sektant1/ram.nvim",
   opts = {},
   keys = {
     { "<leader>rg", function() require("ram").global() end,  desc = "Ram global" },
