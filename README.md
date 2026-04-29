@@ -1,6 +1,22 @@
+<div align="center">
+
+<img src="assets/logo.png" alt="ram.nvim logo" width="180" />
+
 # ram.nvim
 
 Quick-note buffer. Always there.
+
+[![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143?logo=neovim&logoColor=white)](https://neovim.io)
+[![Lua](https://img.shields.io/badge/Lua-5.1-2C2D72?logo=lua&logoColor=white)](https://www.lua.org)
+[![License: MIT](https://img.shields.io/github/license/sektant1/ram.nvim)](./LICENSE)
+[![Stars](https://img.shields.io/github/stars/sektant1/ram.nvim?style=social)](https://github.com/sektant1/ram.nvim/stargazers)
+[![Issues](https://img.shields.io/github/issues/sektant1/ram.nvim)](https://github.com/sektant1/ram.nvim/issues)
+
+<img src="assets/demo.gif" alt="ram.nvim demo" width="720" />
+
+</div>
+
+---
 
 Two notes:
 - **global**  one note, everywhere
@@ -8,7 +24,9 @@ Two notes:
 
 Files on disk. No state loss.
 
-## Install (lazy.nvim)
+## Install
+
+### lazy.nvim
 
 ```lua
 {
@@ -22,6 +40,13 @@ Files on disk. No state loss.
   },
   cmd = { "RamGlobal", "RamProject", "RamPreview", "RamClose" },
 }
+```
+
+### vim.pack (Neovim 0.12+)
+
+```lua
+vim.pack.add({ "https://github.com/sektant1/ram.nvim" })
+require("ram").setup({})
 ```
 
 ## Keys
