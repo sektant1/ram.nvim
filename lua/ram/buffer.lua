@@ -41,7 +41,9 @@ local function apply_window_opts(winid, kind, path)
   wo.wrap = true
   wo.linebreak = true
   wo.cursorline = false
-  wo.winbar = " RAM · " .. scope_label(kind, path) .. " %m "
+  if config.options.display ~= "float" then
+    wo.winbar = " RAM · " .. scope_label(kind, path) .. " %m "
+  end
 end
 
 local function open_container(path, kind)
