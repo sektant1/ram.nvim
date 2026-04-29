@@ -1,0 +1,6 @@
+.luarc.json
+*.log
+/tmp/
+tests/.tests/
+.remember/
+demo.cast
