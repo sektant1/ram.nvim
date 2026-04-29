@@ -28,12 +28,12 @@ local function apply_window_opts(winid)
   local wo = vim.wo[winid]
   wo.signcolumn = "no"
   wo.foldcolumn = "0"
-  wo.number = false
+  wo.number = true
   wo.relativenumber = false
   wo.spell = false
   wo.wrap = true
   wo.linebreak = true
-  wo.cursorline = true
+  wo.cursorline = false
 end
 
 local function open_container(path)
@@ -189,7 +189,12 @@ function M.close()
       M.state.cursor[M.state.kind] = cur
     end
   end
-  if bufnr and vim.api.nvim_buf_is_valid(bufnr) and config.options.autosave and vim.bo[bufnr].modified then
+  if
+    bufnr
+    and vim.api.nvim_buf_is_valid(bufnr)
+    and config.options.autosave
+    and vim.bo[bufnr].modified
+  then
     pcall(vim.api.nvim_buf_call, bufnr, function()
       vim.cmd("silent! write")
     end)
