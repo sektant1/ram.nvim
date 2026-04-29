@@ -51,13 +51,9 @@ require("ram").setup({})
 
 ## Keys
 
-| key | does |
-|---|---|
-| `<leader>rg` | open global |
-| `<leader>rp` | open project |
-| `<leader>rv` | toggle preview |
-| `<leader>rx` | close |
-| `q` (in buf) | close |
+No defaults. Bind whatever you want via lazy `keys = {}` (see install snippet) or `setup({ keymaps = { ... } })`.
+
+Inside a ram buffer: `q` closes (buffer-local).
 
 Reopen same note = close. Different note = swap.
 
@@ -82,10 +78,11 @@ require("ram").setup({
     "Makefile", ".project-notes.md",
   },
   keymaps = {
-    global = "<leader>rg",
-    project = "<leader>rp",
-    preview = "<leader>rv",
-    close = "<leader>rx",
+    -- no defaults — set explicitly or use lazy `keys = {}`
+    global = false,   -- e.g. "<leader>rg"
+    project = false,  -- e.g. "<leader>rp"
+    preview = false,  -- e.g. "<leader>rv"
+    close = false,    -- e.g. "<leader>rx"
   },
   filetype = "markdown",
   autosave = true,

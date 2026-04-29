@@ -50,10 +50,10 @@ Defaults: >
       "Makefile", ".project-notes.md",
     },
     keymaps = {
-      global = "<leader>rg",
-      project = "<leader>rp",
-      preview = "<leader>rv",
-      close = "<leader>rx",
+      global = false,   -- e.g. "<leader>rg"
+      project = false,  -- e.g. "<leader>rp"
+      preview = false,  -- e.g. "<leader>rv"
+      close = false,    -- e.g. "<leader>rx"
     },
     filetype = "markdown",
     autosave = true,         -- save on BufLeave if modified
@@ -79,18 +79,21 @@ Set `project_root_markers = {}` to force strict cwd behavior.
 ==============================================================================
 5. KEYMAPS                                                      *ram-keymaps*
 
-Default mappings (overridable via `keymaps` config):
+No default mappings — opt in explicitly. Two options:
 
-  <leader>rg   open global note
-  <leader>rp   open project note
-  <leader>rv   preview current note
-  <leader>rx   close ram window
+1. Plugin manager keys (recommended). Example with lazy.nvim: >
+    keys = {
+      { "<leader>rg", function() require("ram").global() end },
+      { "<leader>rp", function() require("ram").project() end },
+      { "<leader>rv", function() require("ram").preview() end },
+      { "<leader>rx", function() require("ram").close() end },
+    }
+<
+2. Via `setup({ keymaps = { global = "<leader>rg", ... } })`.
 
 Inside a ram buffer:
 
   q            close ram (buffer-local)
-
-Set any keymap to `false` to disable it.
 
 ==============================================================================
 6. API                                                              *ram-api*

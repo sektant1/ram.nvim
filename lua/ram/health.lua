@@ -1,7 +1,12 @@
 local M = {}
 
 local function h()
-  return vim.health or require("health")
+  return vim.health
+end
+
+local function file_exists(path)
+  local uv = vim.uv or vim.loop
+  return uv.fs_stat(path) ~= nil
 end
 
 function M.check()
@@ -11,31 +16,56 @@ function M.check()
   if vim.fn.has("nvim-0.10") == 1 then
     health.ok("Neovim >= 0.10")
   else
-    health.warn("Neovim < 0.10 — some APIs may be missing")
+    health.error("Neovim 0.10+ required")
   end
 
   local ok_cfg, config = pcall(require, "ram.config")
-  if ok_cfg and config.options then
-    health.ok("config loaded (display = " .. tostring(config.options.display) .. ")")
-  else
-    health.error("config failed to load")
+  if not ok_cfg or not config.options then
+    health.error("ram.config failed to load")
     return
   end
+  health.ok("config loaded (display = " .. tostring(config.options.display) .. ")")
 
+  health.start("ram.nvim: notes")
   local ok_notes, notes = pcall(require, "ram.notes")
-  if ok_notes then
+  if not ok_notes then
+    health.error("ram.notes failed to load")
+  else
     local g = notes.global_path()
+    health.info("global note: " .. g .. (file_exists(g) and " (exists)" or " (will be created)"))
+    local root = notes.project_root()
     local p = notes.project_path()
-    health.info("global note: " .. g)
-    health.info("project note: " .. p)
+    health.info("cwd: " .. vim.fn.getcwd())
+    health.info("project root: " .. root)
+    health.info("project note: " .. p .. (file_exists(p) and " (exists)" or " (will be created)"))
   end
 
+  health.start("ram.nvim: keymaps")
+  local km = config.options.keymaps or {}
+  local any = false
+  for _, k in ipairs({ "global", "project", "preview", "close" }) do
+    if km[k] then
+      health.ok(k .. " -> " .. tostring(km[k]))
+      any = true
+    end
+  end
+  if not any then
+    health.info("no keymaps set in config — bind via your plugin manager or setup({ keymaps = ... })")
+  end
+
+  health.start("ram.nvim: preview backends")
   local ok_rm = pcall(require, "render-markdown")
   if ok_rm then
-    health.ok("render-markdown.nvim detected")
-  elseif vim.fn.executable("glow") == 1 then
-    health.ok("glow CLI detected")
+    health.ok("render-markdown.nvim available")
   else
+    health.info("render-markdown.nvim not installed")
+  end
+  if vim.fn.executable("glow") == 1 then
+    health.ok("glow CLI available")
+  else
+    health.info("glow CLI not found")
+  end
+  if not ok_rm and vim.fn.executable("glow") ~= 1 then
     health.warn("no preview backend — falling back to native markdown syntax")
   end
 end
