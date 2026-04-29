@@ -1,25 +1,12 @@
 # ram.nvim
 
-Persistent quick-note buffer for Neovim. Always loaded, always accessible, zero friction.
+Quick-note buffer. Always there. Zero friction.
 
-## Why RAM
+Two notes:
+- **global** — one note, everywhere
+- **project** — one note per project root
 
-Two notes, one keystroke away:
-
-- **Global** — one note shared across every session
-- **Project** — one note scoped to the current working directory
-
-Files persist on disk. Open, type, close, reopen later. No state loss.
-
-## Features
-
-- Configurable display: `float` (default), `split`, `vsplit`, `tab`
-- Toggle behavior — reopening the same note closes it
-- Autosave on `BufLeave`
-- Cursor restored per note on reopen
-- Optional markdown preview via `render-markdown.nvim` or `glow` (graceful fallback)
-- No required external dependencies
-- Lazy-load friendly (`keys = {}`)
+Files on disk. No state loss.
 
 ## Install (lazy.nvim)
 
@@ -28,50 +15,50 @@ Files persist on disk. Open, type, close, reopen later. No state loss.
   "gfe/ram.nvim",
   opts = {},
   keys = {
-    { "<leader>rg", function() require("ram").global() end,  desc = "Ram: global note" },
-    { "<leader>rp", function() require("ram").project() end, desc = "Ram: project note" },
-    { "<leader>rv", function() require("ram").preview() end, desc = "Ram: preview" },
-    { "<leader>rx", function() require("ram").close() end,   desc = "Ram: close" },
+    { "<leader>rg", function() require("ram").global() end,  desc = "Ram global" },
+    { "<leader>rp", function() require("ram").project() end, desc = "Ram project" },
+    { "<leader>rv", function() require("ram").preview() end, desc = "Ram preview" },
+    { "<leader>rx", function() require("ram").close() end,   desc = "Ram close" },
   },
   cmd = { "RamGlobal", "RamProject", "RamPreview", "RamClose" },
 }
 ```
 
-## Usage
+## Keys
 
-| Mapping        | Action                       |
-| -------------- | ---------------------------- |
-| `<leader>rg`   | open global note             |
-| `<leader>rp`   | open project note            |
-| `<leader>rv`   | preview current note         |
-| `<leader>rx`   | close ram window             |
-| `q` (in buf)   | close ram (buffer-local)     |
+| key | does |
+|---|---|
+| `<leader>rg` | open global |
+| `<leader>rp` | open project |
+| `<leader>rv` | toggle preview |
+| `<leader>rx` | close |
+| `q` (in buf) | close |
 
-## Configuration
+Reopen same note = close. Different note = swap.
 
-Defaults:
+## Where files live
+
+- global: `stdpath("data")/ram/global.md`
+- project: `<project_root>/.project-notes.md`
+
+Project root = walk up cwd, find `.git` / `package.json` / `Cargo.toml` / `pyproject.toml` / `go.mod` / `Makefile`. None? Use cwd.
+
+## Config (defaults)
 
 ```lua
 require("ram").setup({
-  display = "float",           -- "float"|"split"|"vsplit"|"tab"
-  float = {
-    width = 0.6,
-    height = 0.7,
-    border = "rounded",
-    title = " RAM ",
-  },
-  global_note_path = nil,      -- override default path
+  display = "float",  -- float | split | vsplit | tab
+  float = { width = 0.6, height = 0.7, border = "rounded", title = " RAM " },
+  global_note_path = nil,
   project_note_filename = ".project-notes.md",
-  project_root_markers = {     -- walk up cwd to find project root
+  project_root_markers = {
     ".git", ".hg", ".svn",
     "package.json", "Cargo.toml", "pyproject.toml", "go.mod",
     "Makefile", ".project-notes.md",
   },
   keymaps = {
-    global = "<leader>rg",
-    project = "<leader>rp",
-    preview = "<leader>rv",
-    close = "<leader>rx",
+    global = "<leader>rg", project = "<leader>rp",
+    preview = "<leader>rv", close = "<leader>rx",
   },
   filetype = "markdown",
   autosave = true,
@@ -79,27 +66,20 @@ require("ram").setup({
 })
 ```
 
-Storage paths:
-
-- Global: `vim.fn.stdpath("data") .. "/ram/global.md"` (or `global_note_path`)
-- Project: `<project_root>/<project_note_filename>` — root is found by walking up the cwd matching any `project_root_markers` (falls back to cwd). Set `project_root_markers = {}` to force strict cwd.
-
-Set any keymap to `false` to disable it.
+Any keymap = `false` to disable. `project_root_markers = {}` = strict cwd.
 
 ## Commands
 
-- `:RamGlobal` — open global note
-- `:RamProject` — open project note
-- `:RamPreview` — toggle preview
-- `:RamClose` — close ram window
+`:RamGlobal` `:RamProject` `:RamPreview` `:RamClose`
 
-## Preview backends
+## Preview
 
-Detected at preview time, in order:
+Tries in order:
+1. `render-markdown.nvim` — toggle in-buffer
+2. `glow` CLI — terminal split
+3. native markdown syntax — fallback
 
-1. [`render-markdown.nvim`](https://github.com/MeanderingProgrammer/render-markdown.nvim) — toggled in-buffer
-2. `glow` CLI — opens a terminal split rendering the note
-3. Native vim markdown syntax — fallback, notified once
+No hard deps. Pick none = still works.
 
 ## Health
 
@@ -107,8 +87,6 @@ Detected at preview time, in order:
 :checkhealth ram
 ```
 
-Reports Neovim version, config load, note paths, and preview backend status.
-
 ## License
 
-MIT — see [LICENSE](./LICENSE).
+MIT.
