@@ -100,6 +100,7 @@ local function open_container(path, kind)
         enter = true,
         focusable = true,
         border = border_nui,
+        relative = "editor",
         position = "50%",
         size = {
           width = math.floor(opts.float.width * 100) .. "%",
