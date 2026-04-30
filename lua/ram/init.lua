@@ -7,24 +7,14 @@ local function buffer()
   return require("ram.buffer")
 end
 
----Open the global ram note (toggle if already open).
+---Toggle the global ram note.
 function M.global()
   buffer().open("global")
 end
 
----Open the project ram note (toggle if already open).
+---Toggle the project ram note.
 function M.project()
   buffer().open("project")
-end
-
----Toggle last-opened ram note (defaults to global).
-function M.toggle()
-  buffer().toggle()
-end
-
----Close the ram window.
-function M.close()
-  buffer().close()
 end
 
 local function set_keymap(lhs, fn, desc)
@@ -59,8 +49,6 @@ function M.setup(opts)
   local km = config.options.keymaps or {}
   set_keymap(km.global, M.global, "Ram: global note")
   set_keymap(km.project, M.project, "Ram: project note")
-  set_keymap(km.toggle, M.toggle, "Ram: toggle")
-  set_keymap(km.close, M.close, "Ram: close")
   register_lsp_guard()
 end
 

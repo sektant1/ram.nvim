@@ -39,7 +39,7 @@ Defaults: >
     float = {
       width = 0.6,           -- fraction of editor width
       height = 0.7,          -- fraction of editor height
-      border = "rounded",    -- any nvim border spec
+      border = "single",     -- string spec or nui border table
       title = " RAM ",
     },
     global_note_path = nil,  -- override default path
@@ -52,8 +52,6 @@ Defaults: >
     keymaps = {
       global = false,   -- e.g. "<leader>rg"
       project = false,  -- e.g. "<leader>rp"
-      toggle = false,   -- e.g. "<leader>rr"
-      close = false,    -- e.g. "<leader>rx"
     },
     filetype = "markdown",
     autosave = true,         -- save on BufLeave if modified
@@ -70,10 +68,8 @@ Set `project_root_markers = {}` to force strict cwd behavior.
 ==============================================================================
 4. COMMANDS                                                    *ram-commands*
 
-  *:RamGlobal*    Open the global note (toggle if already open)
-  *:RamProject*   Open the project note (toggle if already open)
-  *:RamToggle*    Toggle last-opened note (defaults to global)
-  *:RamClose*     Close the ram window
+  *:RamGlobal*    Toggle the global note
+  *:RamProject*   Toggle the project note
 
 ==============================================================================
 5. KEYMAPS                                                      *ram-keymaps*
@@ -84,7 +80,6 @@ No default mappings — opt in explicitly. Two options:
     keys = {
       { "<leader>rg", function() require("ram").global() end },
       { "<leader>rp", function() require("ram").project() end },
-      { "<leader>rx", function() require("ram").close() end },
     }
 <
 2. Via `setup({ keymaps = { global = "<leader>rg", ... } })`.
@@ -97,10 +92,8 @@ Inside a ram buffer:
 6. API                                                              *ram-api*
 
   require("ram").setup(opts)
-  require("ram").global()
-  require("ram").project()
-  require("ram").toggle()
-  require("ram").close()
+  require("ram").global()   -- toggle global note
+  require("ram").project()  -- toggle project note
 
 ==============================================================================
 7. HEALTH                                                        *ram-health*

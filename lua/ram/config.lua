@@ -1,17 +1,16 @@
 ---@class RamFloatConfig
 ---@field width number Fraction of editor columns (0..1)
 ---@field height number Fraction of editor lines (0..1)
----@field border string|string[] Any nvim border spec
+---@field border string|string[]|table Border style string, char list, or nui border table ({ style, padding, text, ... })
 ---@field title string Float window title
 
 ---@class RamKeymaps
 ---@field global string|false
 ---@field project string|false
----@field toggle string|false
----@field close string|false
 
 ---@class RamConfig
 ---@field display "float"|"split"|"vsplit"|"tab"
+---@field ui "auto"|"native"|"nui"
 ---@field float RamFloatConfig
 ---@field global_note_path string|nil
 ---@field project_note_filename string
@@ -25,10 +24,11 @@ local M = {}
 ---@type RamConfig
 M.defaults = {
   display = "float",
+  ui = "auto",
   float = {
     width = 0.6,
     height = 0.7,
-    border = "rounded",
+    border = "single",
     title = " RAM ",
   },
   global_note_path = nil,
@@ -47,8 +47,6 @@ M.defaults = {
   keymaps = {
     global = false,
     project = false,
-    toggle = false,
-    close = false,
   },
   filetype = "markdown",
   autosave = true,

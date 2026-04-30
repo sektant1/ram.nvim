@@ -9,8 +9,31 @@ local M = {}
 ---@field kind "global"|"project"|nil
 ---@field path string|nil
 ---@field cursor table<string, integer[]>
----@field last_kind "global"|"project"|nil
-M.state = { bufnr = nil, winid = nil, kind = nil, path = nil, cursor = {}, last_kind = nil }
+---@field popup table|nil nui popup handle
+M.state = {
+  bufnr = nil,
+  winid = nil,
+  kind = nil,
+  path = nil,
+  cursor = {},
+  popup = nil,
+}
+
+---@return table|nil nui.popup module if available and enabled
+local function nui_popup()
+  local ui = config.options.ui or "auto"
+  if ui == "native" then
+    return nil
+  end
+  local ok, Popup = pcall(require, "nui.popup")
+  if not ok then
+    if ui == "nui" then
+      vim.notify("ram.nvim: ui='nui' but nui.nvim not installed", vim.log.levels.WARN)
+    end
+    return nil
+  end
+  return Popup
+end
 
 ---@return boolean
 function M.is_open()
@@ -59,21 +82,49 @@ local function open_container(path, kind)
   local title = " " .. base .. " · " .. scope_label(kind, path) .. " "
 
   local winid
+  local popup
   if opts.display == "float" then
-    local w = math.max(1, math.floor(vim.o.columns * opts.float.width))
-    local h = math.max(1, math.floor(vim.o.lines * opts.float.height))
-    local row = math.max(0, math.floor((vim.o.lines - h) / 2))
-    local col = math.max(0, math.floor((vim.o.columns - w) / 2))
-    winid = vim.api.nvim_open_win(bufnr, true, {
-      relative = "editor",
-      width = w,
-      height = h,
-      row = row,
-      col = col,
-      border = opts.float.border,
-      title = title,
-      style = "minimal",
-    })
+    local b = opts.float.border
+    local border_native = type(b) == "table" and b.style or b
+    local border_nui
+    if type(b) == "table" then
+      border_nui = vim.tbl_deep_extend("force", { text = { top = title, top_align = "center" } }, b)
+    else
+      border_nui = { style = b, text = { top = title, top_align = "center" } }
+    end
+
+    local Popup = nui_popup()
+    if Popup then
+      popup = Popup({
+        bufnr = bufnr,
+        enter = true,
+        focusable = true,
+        border = border_nui,
+        position = "50%",
+        size = {
+          width = math.floor(opts.float.width * 100) .. "%",
+          height = math.floor(opts.float.height * 100) .. "%",
+        },
+        win_options = { winblend = 0 },
+      })
+      popup:mount()
+      winid = popup.winid
+    else
+      local w = math.max(1, math.floor(vim.o.columns * opts.float.width))
+      local h = math.max(1, math.floor(vim.o.lines * opts.float.height))
+      local row = math.max(0, math.floor((vim.o.lines - h) / 2))
+      local col = math.max(0, math.floor((vim.o.columns - w) / 2))
+      winid = vim.api.nvim_open_win(bufnr, true, {
+        relative = "editor",
+        width = w,
+        height = h,
+        row = row,
+        col = col,
+        border = border_native,
+        title = title,
+        style = "minimal",
+      })
+    end
   elseif opts.display == "split" then
     vim.cmd("split")
     winid = vim.api.nvim_get_current_win()
@@ -91,7 +142,7 @@ local function open_container(path, kind)
   end
 
   apply_window_opts(winid, kind, path)
-  return bufnr, winid
+  return bufnr, winid, popup
 end
 
 local function detach_lsp(bufnr)
@@ -142,6 +193,7 @@ local function setup_buffer(bufnr, _kind, _path)
       if tonumber(ev.match) == M.state.winid then
         M.state.winid = nil
         M.state.bufnr = nil
+        M.state.popup = nil
         M.state.kind = nil
         M.state.path = nil
       end
@@ -165,12 +217,12 @@ function M.open(kind)
   if not path then
     return
   end
-  local bufnr, winid = open_container(path, kind)
+  local bufnr, winid, popup = open_container(path, kind)
   M.state.bufnr = bufnr
   M.state.winid = winid
+  M.state.popup = popup
   M.state.kind = kind
   M.state.path = path
-  M.state.last_kind = kind
 
   setup_buffer(bufnr, kind, path)
 
@@ -182,15 +234,11 @@ function M.open(kind)
   end
 end
 
----Toggle the last-opened ram note. Defaults to global on first use.
-function M.toggle()
-  M.open(M.state.last_kind or "global")
-end
-
 function M.close()
   if not M.is_open() then
     M.state.winid = nil
     M.state.bufnr = nil
+    M.state.popup = nil
     M.state.kind = nil
     M.state.path = nil
     return
@@ -213,11 +261,16 @@ function M.close()
       vim.cmd("silent! write")
     end)
   end
-  if winid and vim.api.nvim_win_is_valid(winid) then
+  if M.state.popup then
+    pcall(function()
+      M.state.popup:unmount()
+    end)
+  elseif winid and vim.api.nvim_win_is_valid(winid) then
     pcall(vim.api.nvim_win_close, winid, true)
   end
   M.state.winid = nil
   M.state.bufnr = nil
+  M.state.popup = nil
   M.state.kind = nil
   M.state.path = nil
 end

@@ -34,12 +34,10 @@ Two notes:
   "sektant1/ram.nvim",
   opts = {},
   keymaps = {
-    global  = false,  -- e.g. "<leader>rg"
-    project = false,  -- e.g. "<leader>rp"
-    toggle  = false,  -- e.g. "<leader>rr"
-    close   = false,  -- e.g. "<leader>rx"
+    global  = "<leader>rg",
+    project = "<leader>rp",
   },
-  cmd = { "RamGlobal", "RamProject", "RamToggle", "RamClose" },
+  cmd = { "RamGlobal", "RamProject" },
 }
 ```
 
@@ -62,7 +60,10 @@ Project root = walk up cwd, find `.git` / `package.json` / `Cargo.toml` / `pypro
 ```lua
 require("ram").setup({
   display = "float",  -- float | split | vsplit | tab
-  float = { width = 0.6, height = 0.7, border = "rounded", title = " RAM " },
+  ui = "auto",        -- auto | native | nui  (nui.nvim used if installed)
+  -- border: string ("single"|"double"|"rounded"|"solid"|"shadow") or full nui border table:
+  --   border = { style = "single", padding = { 1, 2 }, text = { top_align = "left" } }
+  float = { width = 0.6, height = 0.7, border = "single", title = " RAM " },
   global_note_path = nil,
   project_note_filename = ".ram.md",
   project_root_markers = {
@@ -73,8 +74,6 @@ require("ram").setup({
   keymaps = {
     global  = false,  -- e.g. "<leader>rg"
     project = false,  -- e.g. "<leader>rp"
-    toggle  = false,  -- e.g. "<leader>rr"
-    close   = false,  -- e.g. "<leader>rx"
   },
   filetype = "markdown",
   autosave = true,
@@ -86,7 +85,7 @@ Any keymap = `false` to disable.
 
 ## Commands
 
-`:RamGlobal` `:RamProject` `:RamToggle` `:RamClose`
+`:RamGlobal` `:RamProject` (both toggle)
 
 ## Health
 

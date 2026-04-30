@@ -26,6 +26,18 @@ function M.check()
   end
   health.ok("config loaded (display = " .. tostring(config.options.display) .. ")")
 
+  local ui = config.options.ui or "auto"
+  local has_nui = pcall(require, "nui.popup")
+  if ui == "nui" and not has_nui then
+    health.error("ui='nui' but nui.nvim not installed (https://github.com/MunifTanjim/nui.nvim)")
+  elseif ui == "native" then
+    health.info("ui = native (nui.nvim ignored)")
+  elseif has_nui then
+    health.ok("nui.nvim detected — float uses nui Popup (ui = " .. ui .. ")")
+  else
+    health.info("nui.nvim not found — float uses native API (optional dep)")
+  end
+
   health.start("ram.nvim: notes")
   local ok_notes, notes = pcall(require, "ram.notes")
   if not ok_notes then
@@ -53,7 +65,7 @@ function M.check()
   health.start("ram.nvim: keymaps")
   local km = config.options.keymaps or {}
   local any = false
-  for _, k in ipairs({ "global", "project", "toggle", "close" }) do
+  for _, k in ipairs({ "global", "project" }) do
     if km[k] then
       health.ok(k .. " -> " .. tostring(km[k]))
       any = true
