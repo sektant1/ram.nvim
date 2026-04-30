@@ -107,7 +107,7 @@ local function detach_lsp(bufnr)
   end)
 end
 
-local function setup_buffer(bufnr, kind, path)
+local function setup_buffer(bufnr, _kind, _path)
   local opts = config.options
   vim.bo[bufnr].filetype = opts.filetype
   vim.bo[bufnr].swapfile = false

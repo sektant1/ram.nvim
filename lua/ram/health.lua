@@ -60,7 +60,9 @@ function M.check()
     end
   end
   if not any then
-    health.info("no keymaps set in config — bind via your plugin manager or setup({ keymaps = ... })")
+    health.info(
+      "no keymaps set in config — bind via your plugin manager or setup({ keymaps = ... })"
+    )
   end
 end
 
