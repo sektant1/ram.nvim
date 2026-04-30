@@ -18,7 +18,6 @@ Two notes:
 - **global**  one note, everywhere
 - **project**  one note per project root
 
-**Global** file is located at `~/.local/share/nvim/ram/global.md` .
 
 <div align="center">
 
