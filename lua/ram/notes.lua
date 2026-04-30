@@ -62,8 +62,9 @@ function M.find_root(start, markers)
   return nil
 end
 
----Resolve the project root for the cwd.
----Returns cwd if `project_root_markers` is empty (strict-cwd mode).
+---Resolve the project root.
+---Search starts from the current buffer's file directory (if it has one),
+---else the cwd. Returns cwd if `project_root_markers` is empty (strict-cwd mode).
 ---Returns nil if markers are configured but none are found upward.
 ---@return string?
 function M.project_root()
@@ -72,7 +73,39 @@ function M.project_root()
   if #markers == 0 then
     return cwd
   end
-  return M.find_root(cwd, markers)
+  local starts = {}
+  local seen = {}
+  local function push(p)
+    if p and p ~= "" and not seen[p] and uv.fs_stat(p) then
+      seen[p] = true
+      table.insert(starts, p)
+    end
+  end
+  local function push_file(p)
+    if p and p ~= "" then
+      push(vim.fs.dirname(p))
+    end
+  end
+  push_file(vim.api.nvim_buf_get_name(0))
+  for _, w in ipairs(vim.api.nvim_list_wins()) do
+    local ok, wcwd = pcall(vim.fn.getcwd, w)
+    if ok then
+      push(wcwd)
+    end
+  end
+  for _, b in ipairs(vim.api.nvim_list_bufs()) do
+    if vim.api.nvim_buf_is_loaded(b) and vim.bo[b].buflisted then
+      push_file(vim.api.nvim_buf_get_name(b))
+    end
+  end
+  push(cwd)
+  for _, s in ipairs(starts) do
+    local r = M.find_root(s, markers)
+    if r then
+      return r
+    end
+  end
+  return nil
 end
 
 ---@return string?
