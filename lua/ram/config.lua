@@ -7,6 +7,7 @@
 ---@class RamKeymaps
 ---@field global string|false
 ---@field project string|false
+---@field toggle string|false
 ---@field close string|false
 
 ---@class RamConfig
@@ -18,7 +19,6 @@
 ---@field keymaps RamKeymaps
 ---@field filetype string
 ---@field autosave boolean
----@field commands boolean
 
 local M = {}
 
@@ -42,15 +42,16 @@ M.defaults = {
     "pyproject.toml",
     "go.mod",
     "Makefile",
+    ".ram.md",
   },
   keymaps = {
     global = false,
     project = false,
+    toggle = false,
     close = false,
   },
   filetype = "markdown",
   autosave = true,
-  commands = true,
 }
 
 ---@type RamConfig

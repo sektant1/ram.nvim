@@ -11,4 +11,5 @@ end
 
 vim.api.nvim_create_user_command("RamGlobal", call("global"), { desc = "Ram: open global note" })
 vim.api.nvim_create_user_command("RamProject", call("project"), { desc = "Ram: open project note" })
+vim.api.nvim_create_user_command("RamToggle", call("toggle"), { desc = "Ram: toggle last note" })
 vim.api.nvim_create_user_command("RamClose", call("close"), { desc = "Ram: close ram window" })

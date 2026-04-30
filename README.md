@@ -1,7 +1,5 @@
 <div align="center">
 
-<img src="assets/logo.png" alt="ram.nvim logo" width="180" />
-
 # ram.nvim
 
 (Ready Access Markdown)
@@ -11,8 +9,6 @@
 [![License: MIT](https://img.shields.io/github/license/sektant1/ram.nvim)](./LICENSE)
 [![Stars](https://img.shields.io/github/stars/sektant1/ram.nvim?style=social)](https://github.com/sektant1/ram.nvim/stargazers)
 [![Issues](https://img.shields.io/github/issues/sektant1/ram.nvim)](https://github.com/sektant1/ram.nvim/issues)
-
-<img src="assets/demo.gif" alt="ram.nvim demo" width="720" />
 
 </div>
 
@@ -35,9 +31,10 @@ Files on disk. No state loss.
   keys = {
     { "<leader>rg", function() require("ram").global() end,  desc = "Ram global" },
     { "<leader>rp", function() require("ram").project() end, desc = "Ram project" },
+    { "<leader>rr", function() require("ram").toggle() end,  desc = "Ram toggle" },
     { "<leader>rx", function() require("ram").close() end,   desc = "Ram close" },
   },
-  cmd = { "RamGlobal", "RamProject", "RamClose" },
+  cmd = { "RamGlobal", "RamProject", "RamToggle", "RamClose" },
 }
 ```
 
@@ -76,14 +73,14 @@ require("ram").setup({
     "package.json", "Cargo.toml", "pyproject.toml", "go.mod",
     "Makefile", ".ram.md",
   },
-  keys = {
-    -- { "<leader>rg", function() require("ram").global() end,  desc = "Ram global" }, 
-    -- { "<leader>rp", function() require("ram").project() end, desc = "Ram project" },
-    -- { "<leader>rx", function() require("ram").close() end,   desc = "Ram close" },
+  keymaps = {
+    global  = false,  -- e.g. "<leader>rg"
+    project = false,  -- e.g. "<leader>rp"
+    toggle  = false,  -- e.g. "<leader>rr"
+    close   = false,  -- e.g. "<leader>rx"
   },
   filetype = "markdown",
   autosave = true,
-  commands = true,
 })
 ```
 
@@ -91,7 +88,7 @@ Any keymap = `false` to disable. `project_root_markers = {}` = strict cwd.
 
 ## Commands
 
-`:RamGlobal` `:RamProject` `:RamClose`
+`:RamGlobal` `:RamProject` `:RamToggle` `:RamClose`
 
 ## Health
 

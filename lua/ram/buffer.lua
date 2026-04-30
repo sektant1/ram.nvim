@@ -9,7 +9,8 @@ local M = {}
 ---@field kind "global"|"project"|nil
 ---@field path string|nil
 ---@field cursor table<string, integer[]>
-M.state = { bufnr = nil, winid = nil, kind = nil, path = nil, cursor = {} }
+---@field last_kind "global"|"project"|nil
+M.state = { bufnr = nil, winid = nil, kind = nil, path = nil, cursor = {}, last_kind = nil }
 
 ---@return boolean
 function M.is_open()
@@ -49,6 +50,8 @@ end
 local function open_container(path, kind)
   local opts = config.options
   local bufnr = vim.fn.bufnr(path, true)
+  vim.b[bufnr].ram = kind
+  vim.b[bufnr].ram_path = path
   vim.fn.bufload(bufnr)
   vim.bo[bufnr].buflisted = false
 
@@ -106,8 +109,6 @@ end
 
 local function setup_buffer(bufnr, kind, path)
   local opts = config.options
-  vim.b[bufnr].ram = kind
-  vim.b[bufnr].ram_path = path
   vim.bo[bufnr].filetype = opts.filetype
   vim.bo[bufnr].swapfile = false
   vim.bo[bufnr].bufhidden = "hide"
@@ -169,6 +170,7 @@ function M.open(kind)
   M.state.winid = winid
   M.state.kind = kind
   M.state.path = path
+  M.state.last_kind = kind
 
   setup_buffer(bufnr, kind, path)
 
@@ -178,6 +180,11 @@ function M.open(kind)
     local row = math.min(cur[1], lc)
     pcall(vim.api.nvim_win_set_cursor, winid, { row, cur[2] })
   end
+end
+
+---Toggle the last-opened ram note. Defaults to global on first use.
+function M.toggle()
+  M.open(M.state.last_kind or "global")
 end
 
 function M.close()

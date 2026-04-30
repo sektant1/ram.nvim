@@ -52,11 +52,11 @@ Defaults: >
     keymaps = {
       global = false,   -- e.g. "<leader>rg"
       project = false,  -- e.g. "<leader>rp"
+      toggle = false,   -- e.g. "<leader>rr"
       close = false,    -- e.g. "<leader>rx"
     },
     filetype = "markdown",
     autosave = true,         -- save on BufLeave if modified
-    commands = true,         -- register :Ram* user commands
   })
 <
 Storage paths:
@@ -72,6 +72,7 @@ Set `project_root_markers = {}` to force strict cwd behavior.
 
   *:RamGlobal*    Open the global note (toggle if already open)
   *:RamProject*   Open the project note (toggle if already open)
+  *:RamToggle*    Toggle last-opened note (defaults to global)
   *:RamClose*     Close the ram window
 
 ==============================================================================
@@ -98,6 +99,7 @@ Inside a ram buffer:
   require("ram").setup(opts)
   require("ram").global()
   require("ram").project()
+  require("ram").toggle()
   require("ram").close()
 
 ==============================================================================

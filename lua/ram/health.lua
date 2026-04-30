@@ -36,14 +36,24 @@ function M.check()
     local root = notes.project_root()
     local p = notes.project_path()
     health.info("cwd: " .. vim.fn.getcwd())
-    health.info("project root: " .. root)
-    health.info("project note: " .. p .. (file_exists(p) and " (exists)" or " (will be created)"))
+    if root then
+      health.info("project root: " .. root)
+    else
+      health.warn(
+        "project root: <none> — no marker found upward from cwd. Set `project_root_markers = {}` for strict cwd."
+      )
+    end
+    if p then
+      health.info("project note: " .. p .. (file_exists(p) and " (exists)" or " (will be created)"))
+    else
+      health.info("project note: <unavailable until a project root is found>")
+    end
   end
 
   health.start("ram.nvim: keymaps")
   local km = config.options.keymaps or {}
   local any = false
-  for _, k in ipairs({ "global", "project", "close" }) do
+  for _, k in ipairs({ "global", "project", "toggle", "close" }) do
     if km[k] then
       health.ok(k .. " -> " .. tostring(km[k]))
       any = true
