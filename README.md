@@ -1,6 +1,7 @@
 <div align="center">
 
 <img src="./assets/logo.png" alt="ram.nvim" width="200" />
+
 (Ready Access Markdown)
 
 [![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143?logo=neovim&logoColor=white)](https://neovim.io)
