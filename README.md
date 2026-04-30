@@ -18,7 +18,7 @@ Two notes:
 - **global**  one note, everywhere
 - **project**  one note per project root
 
-Files on disk. No state loss.
+**Global** file is located at `~/.local/share/nvim/ram/global.md` .
 
 <div align="center">
 
@@ -34,11 +34,11 @@ Files on disk. No state loss.
 {
   "sektant1/ram.nvim",
   opts = {},
-  keys = {
-    { "<leader>rg", function() require("ram").global() end,  desc = "Ram global" },
-    { "<leader>rp", function() require("ram").project() end, desc = "Ram project" },
-    { "<leader>rr", function() require("ram").toggle() end,  desc = "Ram toggle" },
-    { "<leader>rx", function() require("ram").close() end,   desc = "Ram close" },
+  keymaps = {
+    global  = false,  -- e.g. "<leader>rg"
+    project = false,  -- e.g. "<leader>rp"
+    toggle  = false,  -- e.g. "<leader>rr"
+    close   = false,  -- e.g. "<leader>rx"
   },
   cmd = { "RamGlobal", "RamProject", "RamToggle", "RamClose" },
 }
@@ -51,20 +51,12 @@ vim.pack.add({ "https://github.com/sektant1/ram.nvim" })
 require("ram").setup({})
 ```
 
-## Keys
-
-No defaults. Bind whatever you want via lazy `keys = {}` (see install snippet) or `setup({ keymaps = { ... } })`.
-
-Inside a ram buffer: `q` closes (buffer-local).
-
-Reopen same note = close. Different note = swap.
-
 ## Where files live
 
-- global: `stdpath("data")/ram/global.md`
+- global: `~/.local/share/nvim/ram/global.md` (you can change it on setup)
 - project: `<project_root>/.ram.md`
 
-Project root = walk up cwd, find `.git` / `package.json` / `Cargo.toml` / `pyproject.toml` / `go.mod` / `Makefile`. None? Use cwd.
+Project root = walk up cwd, find `.git` / `package.json` / `Cargo.toml` / `pyproject.toml` / `go.mod` / `Makefile` / `CMakeLists.txt`. None? Use cwd.
 
 ## Config (defaults)
 
@@ -90,7 +82,8 @@ require("ram").setup({
 })
 ```
 
-Any keymap = `false` to disable. `project_root_markers = {}` = strict cwd.
+Any keymap = `false` to disable. 
+`project_root_markers = {}` = strict cwd.
 
 ## Commands
 
