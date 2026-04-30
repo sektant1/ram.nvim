@@ -1,6 +1,6 @@
 <div align="center">
 
-<img src="./assets/logo.png" alt="ram.nvim" width="200" />
+<img src="./assets/logo.png" alt="ram.nvim" width="400" />
 
 (Ready Access Markdown)
 
