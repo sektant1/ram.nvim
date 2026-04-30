@@ -1,5 +1,7 @@
 <div align="center">
 
+<img src="./assets/logo.png" alt="ram.nvim" width="200" />
+
 # ram.nvim
 
 (Ready Access Markdown)
@@ -19,6 +21,12 @@ Two notes:
 - **project**  one note per project root
 
 Files on disk. No state loss.
+
+<div align="center">
+
+![demo](./assets/demo.gif)
+
+</div>
 
 ## Install
 
