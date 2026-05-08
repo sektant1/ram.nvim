@@ -2,7 +2,7 @@
 
 <img src="./assets/logo.png" alt="ram.nvim" width="400" />
 
-(Ready Access Markdown)
+**(Ready Access Markdown)**
 
 [![Neovim](https://img.shields.io/badge/Neovim-0.10+-57A143?logo=neovim&logoColor=white)](https://neovim.io)
 [![Lua](https://img.shields.io/badge/Lua-5.1-2C2D72?logo=lua&logoColor=white)](https://www.lua.org)
